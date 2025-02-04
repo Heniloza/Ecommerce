@@ -16,7 +16,7 @@ function MenuItems({ setOpen }) {
             onClick={() => {
               navigate(menuItem.path);
               setOpen ?  setOpen(false) : null;
-            }}
+            }}  
             className="flex items-center gap-2 rounded-md px-3 py-2 cursor-pointer text-muted-foreground hover:bg-muted hover:text-foreground hover:bg-gray-200 text-lg font-bold"
           >
             <IconComponent className="w-5 h-5" /> <span>{menuItem.label}</span>

@@ -70,7 +70,7 @@ const loginController = async (req, res) => {
         id: checkUser._id,
         role: checkUser.role,
         email: checkUser.email,
-        username:checkUser.username
+        username: checkUser.username,
       },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "60m" }
@@ -111,8 +111,7 @@ const logoutController = async (req, res) => {
 const authMiddleware = async (req, res, next) => {
   try {
     const token = req.cookies.token;
-   
-    
+
     if (!token)
       res.json({
         success: false,
