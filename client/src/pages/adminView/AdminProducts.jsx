@@ -8,7 +8,14 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { addProductFormElements } from "@/config";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addNewProduct,
+  fetchAllProduct,
+} from "../../../store/admin/productSlice";
+import { useToast } from "@/hooks/use-toast";
+import ProductTile from "../../components/adminView/ProductTile";
 
 const initialState = {
   image: null,
@@ -22,19 +29,51 @@ const initialState = {
 };
 
 function AdminProducts() {
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState(initialState);
   const [openProducts, setOpenProducts] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [uploadImageUrl, setUploadImageUrl] = useState("");
+  const [imageLoadingState, setImageLoadingState] = useState(false);
+  const { productList } = useSelector((state) => state.adminProducts);
+  const { toast } = useToast();
 
-  function onSubmit() {}
+  function onSubmit(e) {
+    e.preventDefault();
+    dispatch(
+      addNewProduct({
+        ...formData,
+        image: uploadImageUrl,
+      })
+    ).then((data) => {
+      if (data.payload?.success) {
+        dispatch(fetchAllProduct());
+        setOpenProducts(false);
+        setImageFile(null);
+        setFormData(initialState);
+        toast({
+          title: "Product added Successfully.",
+        });
+      }
+    });
+  }
+  useEffect(() => {
+    dispatch(fetchAllProduct());
+  }, [dispatch]);
 
   return (
     <Fragment>
       <div className="mb-5 w-full flex justify-end">
         <Button onClick={() => setOpenProducts(true)}>Add New Product</Button>
       </div>
-      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4"></div>
+      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
+        {productList && productList.length > 0
+          ? productList.map((productItem) => (
+              <ProductTile key={productItem._id} product={productItem} />
+            ))
+          : null}
+      </div>
       <Sheet
         open={openProducts}
         onOpenChange={() => {
@@ -50,6 +89,8 @@ function AdminProducts() {
             setImageFile={setImageFile}
             uploadImageUrl={uploadImageUrl}
             setUploadImageUrl={setUploadImageUrl}
+            setImageLoadingState={setImageLoadingState}
+            imageLoadingState={imageLoadingState}
           />
           <div className="py-6 ">
             <FormCommon
