@@ -37,6 +37,7 @@ function AdminProducts() {
   const [uploadImageUrl, setUploadImageUrl] = useState("");
   const [imageLoadingState, setImageLoadingState] = useState(false);
   const { productList } = useSelector((state) => state.adminProducts);
+  const [currentEditProductId, setCurrentEditProductId] = useState(null);
   const { toast } = useToast();
 
   function onSubmit(e) {
@@ -61,6 +62,11 @@ function AdminProducts() {
   useEffect(() => {
     dispatch(fetchAllProduct());
   }, [dispatch]);
+  useEffect(()=>{
+    if(openProducts===false){
+      setFormData("");
+    }
+  },[openProducts])
 
   return (
     <Fragment>
@@ -70,7 +76,7 @@ function AdminProducts() {
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
         {productList && productList.length > 0
           ? productList.map((productItem) => (
-              <ProductTile key={productItem._id} product={productItem} />
+              <ProductTile setFormData={setFormData} setOpenProducts={setOpenProducts} setCurrentEditProductId={setCurrentEditProductId} key={productItem._id} product={productItem} />
             ))
           : null}
       </div>
@@ -91,6 +97,8 @@ function AdminProducts() {
             setUploadImageUrl={setUploadImageUrl}
             setImageLoadingState={setImageLoadingState}
             imageLoadingState={imageLoadingState}
+            currentEditProductId={currentEditProductId}
+            isEditable={currentEditProductId!==null}
           />
           <div className="py-6 ">
             <FormCommon
