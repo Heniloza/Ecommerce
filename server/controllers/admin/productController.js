@@ -1,5 +1,6 @@
 const { imageUploadUtils } = require("../../helpers/cloudinary");
 const PRODUCT = require("../../models/product");
+const mongoose = require("mongoose")
 
 const handleImageUpload = async (req, res) => {
   try {
@@ -76,7 +77,6 @@ const fetchProduct = async (req, res) => {
 };
 
 //Edit a product
-
 const editProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -89,33 +89,37 @@ const editProduct = async (req, res) => {
       price,
       salePrice,
       totalStock,
+      averageReview,
     } = req.body;
-    const findProduct = await PRODUCT.findById(id);
+
+    let findProduct = await PRODUCT.findById(id);
     if (!findProduct)
       return res.status(404).json({
         success: false,
-        message: "Product not Found",
+        message: "Product not found",
       });
+
     findProduct.title = title || findProduct.title;
     findProduct.description = description || findProduct.description;
     findProduct.category = category || findProduct.category;
     findProduct.brand = brand || findProduct.brand;
-    findProduct.price = price || findProduct.price;
-    findProduct.salePrice = salePrice || findProduct.salePrice;
+    findProduct.price = price === "" ? 0 : price || findProduct.price;
+    findProduct.salePrice =
+      salePrice === "" ? 0 : salePrice || findProduct.salePrice;
     findProduct.totalStock = totalStock || findProduct.totalStock;
     findProduct.image = image || findProduct.image;
+    findProduct.averageReview = averageReview || findProduct.averageReview;
 
     await findProduct.save();
     res.status(200).json({
       success: true,
       data: findProduct,
-      message: "Product is edited",
     });
-  } catch (error) {
-    console.log(error);
+  } catch (e) {
+    console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some Error Occured in editing a product",
+      message: "Error occured",
     });
   }
 };

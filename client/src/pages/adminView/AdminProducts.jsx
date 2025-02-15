@@ -12,6 +12,8 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addNewProduct,
+  deleteProduct,
+  editProduct,
   fetchAllProduct,
 } from "../../../store/admin/productSlice";
 import { useToast } from "@/hooks/use-toast";
@@ -42,31 +44,52 @@ function AdminProducts() {
 
   function onSubmit(e) {
     e.preventDefault();
-    dispatch(
-      addNewProduct({
-        ...formData,
-        image: uploadImageUrl,
-      })
-    ).then((data) => {
-      if (data.payload?.success) {
-        dispatch(fetchAllProduct());
-        setOpenProducts(false);
-        setImageFile(null);
-        setFormData(initialState);
-        toast({
-          title: "Product added Successfully.",
+
+    currentEditProductId !== null
+      ? dispatch(
+          editProduct({
+            id: currentEditProductId,
+            formData,
+          })
+        ).then((data) => {
+          console.log(data, "edit");
+
+          if (data?.payload?.success) {
+            dispatch(fetchAllProduct());
+            setFormData(initialState);
+            setOpenProducts(false);
+            setCurrentEditProductId(null);
+          }
+        })
+      : dispatch(
+          addNewProduct({
+            ...formData,
+            image: uploadImageUrl,
+          })
+        ).then((data) => {
+          if (data.payload?.success) {
+            dispatch(fetchAllProduct());
+            setOpenProducts(false);
+            setImageFile(null);
+            setFormData(initialState);
+            toast({
+              title: "Product added Successfully.",
+            });
+          }
         });
-      }
-    });
   }
+
+function handleDelete(getCurrentEditProductId){
+  dispatch(deleteProduct(getCurrentEditProductId)).then((data)=>{
+    if(data?.payload?.success){
+      dispatch(fetchAllProduct());
+    }
+  })
+
+}
   useEffect(() => {
     dispatch(fetchAllProduct());
   }, [dispatch]);
-  useEffect(()=>{
-    if(openProducts===false){
-      setFormData("");
-    }
-  },[openProducts])
 
   return (
     <Fragment>
@@ -76,7 +99,14 @@ function AdminProducts() {
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
         {productList && productList.length > 0
           ? productList.map((productItem) => (
-              <ProductTile setFormData={setFormData} setOpenProducts={setOpenProducts} setCurrentEditProductId={setCurrentEditProductId} key={productItem._id} product={productItem} />
+              <ProductTile
+                setFormData={setFormData}
+                setOpenProducts={setOpenProducts}
+                setCurrentEditProductId={setCurrentEditProductId}
+                key={productItem._id}
+                product={productItem}
+                handleDelete={handleDelete}
+              />
             ))
           : null}
       </div>
@@ -84,11 +114,17 @@ function AdminProducts() {
         open={openProducts}
         onOpenChange={() => {
           setOpenProducts(false);
+          setCurrentEditProductId(null);
+          setFormData(initialState);
         }}
       >
         <SheetContent side="right" className="overflow-auto">
           <SheetHeader>
-            <SheetTitle>Add New Product</SheetTitle>
+            <SheetTitle>
+              {currentEditProductId !== null
+                ? "Edit Product"
+                : "Add new product"}
+            </SheetTitle>
           </SheetHeader>
           <ImageUpload
             imageFile={imageFile}
@@ -98,13 +134,13 @@ function AdminProducts() {
             setImageLoadingState={setImageLoadingState}
             imageLoadingState={imageLoadingState}
             currentEditProductId={currentEditProductId}
-            isEditable={currentEditProductId!==null}
+            isEditable={currentEditProductId !== null}
           />
           <div className="py-6 ">
             <FormCommon
               formData={formData}
               setFormData={setFormData}
-              buttonText="ADD"
+              buttonText={currentEditProductId !== null ? "Edit" : "Add"}
               formControl={addProductFormElements}
               onSubmit={onSubmit}
             />

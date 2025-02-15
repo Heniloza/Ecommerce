@@ -1,11 +1,26 @@
 import { Label } from "@radix-ui/react-label";
-import React from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import React,{useState,useEffect} from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 
-function FormCommon({ formControl, formData, setFormData, onSubmit, buttonText }) {
+function FormCommon({
+  formControl,
+  formData,
+  setFormData,
+  onSubmit,
+  buttonText,
+ 
+}) {
+  
+
   function renderInputByComponentType(getControlItem) {
     let element = null;
 
@@ -103,7 +118,11 @@ function FormCommon({ formControl, formData, setFormData, onSubmit, buttonText }
           </div>
         ))}
       </div>
-      <Button type="submit" className="mt-2 w-full ">
+      <Button
+        
+        type="submit"
+        className="mt-2 w-full "
+      >
         {buttonText || "SUbmit"}
       </Button>
     </form>

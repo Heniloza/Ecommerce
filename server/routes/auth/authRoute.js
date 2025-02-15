@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.post("/register",registerController);
 router.post('/login',loginController);
-router.post("/logout",loginController)
+router.post("/logout",logoutController)
 router.get("/checkauth",authMiddleware,(req,res)=>{
     const user = req.user;
     res.status(200).json({

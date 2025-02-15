@@ -101,10 +101,18 @@ const loginController = async (req, res) => {
 
 //Logout
 const logoutController = async (req, res) => {
-  res.clearCookie("token").json({
-    success: true,
-    message: "Logged out successfully",
-  });
+  console.log("Cookie is", req.cookies);
+
+  res
+    .clearCookie("token", {
+      httpOnly: true,
+      secure: false,
+    })
+    .status(200)
+    .json({
+      success: true,
+      message: "Logged out successfully",
+    });
 };
 
 //Auth Middleware
@@ -112,20 +120,21 @@ const authMiddleware = async (req, res, next) => {
   try {
     const token = req.cookies.token;
 
-    if (!token)
-      res.json({
+    if (!token) {
+      return res.json({
         success: false,
         message: "unauthorised user",
       });
+    }
     const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
     req.user = decode;
     next();
   } catch (error) {
     console.log(error);
-    // res.status(500).json({
-    //     success:false,
-    //     messsage:"Some Error occured"
-    // })
+    res.status(500).json({
+      success: false,
+      messsage: "Some Error occured",
+    });
   }
 };
 

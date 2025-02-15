@@ -2,7 +2,14 @@ import React from "react";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
 
-const ProductTile = ({ product,setFormData,setOpenProducts,setCurrentEditProductId,setImageFile}) => {
+const ProductTile = ({
+  product,
+  setFormData,
+  setOpenProducts,
+  setCurrentEditProductId,
+  setImageFile,
+  handleDelete
+}) => {
   return (
     <Card className="w-full max-w-sm mx-auto">
       <div>
@@ -10,7 +17,7 @@ const ProductTile = ({ product,setFormData,setOpenProducts,setCurrentEditProduct
           <img
             src={product?.image}
             alt={product?.title}
-            className="w-full h-[300px] object-cover rounded-t-lg  "
+            className="w-full h-[300px] object-cover rounded-t-lg"
           />
         </div>
         <CardContent>
@@ -23,19 +30,24 @@ const ProductTile = ({ product,setFormData,setOpenProducts,setCurrentEditProduct
             >
               ₹{product?.price}
             </span>
-              {
-                product?.salePrice>0 ? <span className="text-lg font-bold">{product?.salePrice}</span>:""
-              }
-            
+            {product?.salePrice > 0 ? (
+              <span className="text-lg font-bold">{product?.salePrice}</span>
+            ) : (
+              ""
+            )}
           </div>
         </CardContent>
         <CardFooter className="flex justify-between items-center">
-          <Button onClick={()=>{
-            setOpenProducts(true);
-            setCurrentEditProductId(product?._id)
-            setFormData(product)
-          }}>Edit</Button>
-          <Button>Delete</Button>
+          <Button
+            onClick={() => {
+              setOpenProducts(true);
+              setCurrentEditProductId(String(product?._id));
+              setFormData(product);
+            }}
+          >
+            Edit
+          </Button>
+          <Button onClick={()=>handleDelete(product?._id)}>Delete</Button>
         </CardFooter>
       </div>
     </Card>
