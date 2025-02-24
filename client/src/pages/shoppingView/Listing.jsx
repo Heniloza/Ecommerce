@@ -8,20 +8,34 @@ import {
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
 import React, { useEffect, useState } from "react";
-import { ArrowUpDownIcon } from "lucide-react";
+import { ArrowUpDownIcon, Heading1 } from "lucide-react";
 import { sortOptions } from "@/config";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllFilteredProducts } from "../../../store/shop/productSlice";
 import ShoppingProductTile from "@/components/shoppingView/ShoppingProductTile";
+import { createSearchParams, useSearchParams } from "react-router-dom";
 
 function Listing() {
   const dispatch = useDispatch();
   const { productList } = useSelector((state) => state.shopProducts);
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   function handleSort(value) {
     setSort(value);
+  }
+
+  function createSearchParamsHelper(filterParams) {
+    const queryParams = [];
+
+    for (const [key, value] of Object.entries(filterParams)) {
+      if (Array.isArray(value) && value.length > 0) {
+        const paramValue = value.join(",");
+        queryParams.push(`${key}=${encodeURIComponent(paramValue)}`);
+      }
+    }
+    return queryParams.join(`&`);
   }
 
   function handleFilter(getSectionId, getCurrentOption) {
@@ -47,13 +61,24 @@ function Listing() {
   }
 
   useEffect(() => {
+    if (filters && Object.keys(filters).length > 0) {
+      const createQueryString = createSearchParamsHelper(filters);
+      setSearchParams(createQueryString);
+    }
+  }, [filters]);
+
+  useEffect(() => {
     setSort("price-lowtohigh");
     setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
   }, []);
 
   useEffect(() => {
-    dispatch(fetchAllFilteredProducts());
-  }, [dispatch]);
+    if (filters !== null && sort !== null) {
+      dispatch(
+        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort })
+      );
+    }
+  }, [dispatch, sort, filters]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 p-4 md:p-6">
@@ -92,11 +117,22 @@ function Listing() {
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-          {productList && productList.length > 0
-            ? productList.map((item, index) => (
-                <ShoppingProductTile key={index} product={item} />
-              ))
-            : null}
+          {productList && productList.length > 0 ? (
+            productList.map((item, index) => (
+              <ShoppingProductTile key={index} product={item} />
+            ))
+          ) : (
+            <div className="flex flex-col items-center justify-between w-full col-span-full lg:mt-8 mt-4">
+              <h1 className="text-gray-600 text-lg font-semibold">
+                No Products Available
+              </h1>
+              <img
+                src="/nodatafound.jpg"
+                alt="No Data Found"
+                className="w-2/4 mt-4"
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
