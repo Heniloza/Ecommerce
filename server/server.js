@@ -6,6 +6,7 @@ const connectMongoDb = require("./connection");
 const authRouter = require("./routes/auth/authRoute");
 const adminProductRoutes = require("./routes/admin/productRoutes");
 const shopProductRoutes = require("./routes/shop/shopProductRoutes");
+const shopCartRoutes = require("./routes/shop/ShopCartRoutes.js");
 
 const app = express();
 dotenv.config();
@@ -41,5 +42,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRouter);
 app.use("/api/admin/products", adminProductRoutes);
 app.use("/api/shop/products", shopProductRoutes);
+app.use("/api/shop/cart", shopCartRoutes);
 
 app.listen(PORT, () => console.log(`SERVER STARTED AT ${PORT} PORT`));

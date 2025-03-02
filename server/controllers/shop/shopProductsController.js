@@ -1,3 +1,4 @@
+const PRODUCT = require("../../models/product");
 const PRODDUCT = require("../../models/product");
 
 const getFilteredeProdutcs = async (req, res) => {
@@ -12,12 +13,12 @@ const getFilteredeProdutcs = async (req, res) => {
     }
     let sort = {};
 
-    switch (sort) {
+    switch (sortBy) {
       case "price-lowtohigh":
         sort.price = 1;
         break;
       case "price-hightolow":
-        sort.price = 1;
+        sort.price = -1;
         break;
       case "title-atoz":
         sort.title = 1;
@@ -44,4 +45,26 @@ const getFilteredeProdutcs = async (req, res) => {
   }
 };
 
-module.exports = { getFilteredeProdutcs };
+const getProductDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await PRODUCT.findById(id);
+
+    if (!product)
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    res.status(200).json({
+      success: true,
+      data: product,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Some Error occured in Filtering products.",
+    });
+  }
+};
+module.exports = { getFilteredeProdutcs, getProductDetails };
