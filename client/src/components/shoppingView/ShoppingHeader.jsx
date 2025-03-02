@@ -1,5 +1,5 @@
 import { HousePlug, LogOut, Menu, ShoppingCart, UserCog } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
@@ -15,6 +15,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { logoutnUser } from "../../../store/auth-slice/index.js";
+import UserCartWrapper from "./UserCartWrapper";
 
 function MenuItems() {
   return (
@@ -35,17 +36,27 @@ function MenuItems() {
 function HeaderRightContent() {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-  function handleLogout(){
-    dispatch(logoutnUser())
+  const dispatch = useDispatch();
+  const [openCartSheet, setOpenCartSheet] = useState(false);
+
+  function handleLogout() {
+    dispatch(logoutnUser());
   }
 
   return (
     <div className="flex lg:items-center lg:flex-row gap-4">
-      <Button varient="outline" size="icon">
-        <ShoppingCart className="h-6 w-6" />
-        <span className="sr-only">User Cart</span>
-      </Button>
+      <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
+        <Button
+          onClick={() => setOpenCartSheet(true)}
+          varient="outline"
+          size="icon"
+        >
+          <ShoppingCart className="h-6 w-6" />
+          <span className="sr-only">User Cart</span>
+        </Button>
+        <UserCartWrapper />
+      </Sheet>
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar className="bg-black">
@@ -57,8 +68,9 @@ function HeaderRightContent() {
         <DropdownMenuContent side="right" className="w-56">
           <DropdownMenuLabel>Logged in as {user?.username}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={()=>navigate("/shop/account")}>
-            <UserCog  className="w-6 h-6 mr-2" />Account
+          <DropdownMenuItem onClick={() => navigate("/shop/account")}>
+            <UserCog className="w-6 h-6 mr-2" />
+            Account
             <DropdownMenuSeparator />
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleLogout}>
@@ -98,11 +110,10 @@ function ShoppingHeader() {
         <div className="hidden lg:block">
           <MenuItems />
         </div>
-        
-          <div className="hidden lg:block">
-            <HeaderRightContent />
-          </div>
-       
+
+        <div className="hidden lg:block">
+          <HeaderRightContent />
+        </div>
       </div>
     </header>
   );
