@@ -18,6 +18,8 @@ import {
 import ShoppingProductTile from "@/components/shoppingView/ShoppingProductTile";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import ProductDetailsDialogue from "@/components/shoppingView/ProductDetailsDialogue";
+import { addToCart, fetchCartItems } from "../../../store/shop/cartSlice";
+import { useToast } from "@/hooks/use-toast";
 
 function Listing() {
   const dispatch = useDispatch();
@@ -28,6 +30,8 @@ function Listing() {
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  const { user } = useSelector((state) => state.auth);
+  const { toast } = useToast();
 
   function handleSort(value) {
     setSort(value);
@@ -71,6 +75,23 @@ function Listing() {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
+  function handleAddToCart(getCurrentProductId) {
+    dispatch(
+      addToCart({
+        userId: user?.id,
+        productId: getCurrentProductId,
+        quantity: 1,
+      })
+    ).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(fetchCartItems(user?.id));
+        toast({
+          title: "Product is added to Cart",
+        });
+      }
+    });
+  }
+
   useEffect(() => {
     if (filters && Object.keys(filters).length > 0) {
       const createQueryString = createSearchParamsHelper(filters);
@@ -96,8 +117,6 @@ function Listing() {
       setOpenDetailsDialog(true);
     }
   }, [productDetails]);
-
-  console.log(productDetails);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 p-4 md:p-6">
@@ -142,6 +161,7 @@ function Listing() {
                 handleProductDetails={handleProductDetails}
                 key={index}
                 product={item}
+                handleAddToCart={handleAddToCart}
               />
             ))
           ) : (

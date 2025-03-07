@@ -4,7 +4,11 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { brandOptionsMap, categoryOptionsMap } from "../../config/index.js";
 
-function ShoppingProductTile({ product, handleProductDetails }) {
+function ShoppingProductTile({
+  product,
+  handleProductDetails,
+  handleAddToCart,
+}) {
   return (
     <Card className="w-full max-w-sm mx-auto">
       <div onClick={() => handleProductDetails(product._id)}>
@@ -45,10 +49,15 @@ function ShoppingProductTile({ product, handleProductDetails }) {
             ) : null}
           </div>
         </CardContent>
-        <CardFooter>
-          <Button className="w-full">Add to cart</Button>
-        </CardFooter>
       </div>
+      <CardFooter>
+        <Button
+          onClick={() => handleAddToCart(product?._id)}
+          className="w-full"
+        >
+          Add to cart
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
