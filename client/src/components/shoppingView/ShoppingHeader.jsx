@@ -17,18 +17,45 @@ import { Avatar, AvatarFallback } from "../ui/avatar";
 import { logoutnUser } from "../../../store/auth-slice/index.js";
 import UserCartWrapper from "./UserCartWrapper";
 import { fetchCartItems } from "../../../store/shop/cartSlice";
+import { Label } from "../ui/label";
 
 function MenuItems() {
+  const navigate = useNavigate();
+  const [activeItem, setActiveItem] = useState("home");
+
+  function handleNavigate(getCurrentItem) {
+    if (getCurrentItem.id === "products") {
+      setActiveItem(getCurrentItem.id);
+      sessionStorage.removeItem("filters");
+      navigate(getCurrentItem.path);
+    } else {
+      setActiveItem(getCurrentItem.id);
+      sessionStorage.removeItem("filters");
+      const currentFilters =
+        getCurrentItem.id !== "home"
+          ? {
+              category: [getCurrentItem.id],
+            }
+          : null;
+      sessionStorage.setItem("filters", JSON.stringify(currentFilters));
+      navigate(getCurrentItem.path);
+    }
+  }
+
   return (
     <nav className="flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row">
       {shoppingViewHeaderMenuItems.map((menuItems) => (
-        <Link
-          to={menuItems.path}
+        <Label
           key={menuItems.id}
-          className="text-sm font-medium"
+          className={`text-sm font-medium cursor-pointer relative after:content-[''] after:absolute after:w-full after:h-[2px] after:left-0 after:bottom-[-3px] after:origin-left after:transition-transform after:duration-300 ${
+            activeItem === menuItems.id
+              ? "after:scale-x-100 after:bg-gray-500"
+              : "after:scale-x-0 hover:after:scale-x-100 after:bg-gray-400"
+          }`}
+          onClick={() => handleNavigate(menuItems)}
         >
           {menuItems.label}
-        </Link>
+        </Label>
       ))}
     </nav>
   );
