@@ -1,5 +1,5 @@
 import { Label } from "@radix-ui/react-label";
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -17,10 +17,8 @@ function FormCommon({
   setFormData,
   onSubmit,
   buttonText,
- 
+  isBtnDisabled,
 }) {
-  
-
   function renderInputByComponentType(getControlItem) {
     let element = null;
 
@@ -118,12 +116,8 @@ function FormCommon({
           </div>
         ))}
       </div>
-      <Button
-        
-        type="submit"
-        className="mt-2 w-full "
-      >
-        {buttonText || "SUbmit"}
+      <Button disabled={isBtnDisabled} type="submit" className="mt-2 w-full ">
+        {buttonText || "Submit"}
       </Button>
     </form>
   );

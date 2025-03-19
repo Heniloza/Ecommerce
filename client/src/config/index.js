@@ -226,8 +226,8 @@ export const addressFormControls = [
     placeholder: "Enter your city",
   },
   {
-    label: "Pincode",
-    name: "pincode",
+    label: "PinCode",
+    name: "pinCode",
     componentType: "input",
     type: "text",
     placeholder: "Enter your pincode",
