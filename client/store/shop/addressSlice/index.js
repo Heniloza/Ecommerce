@@ -35,7 +35,7 @@ export const editAddress = createAsyncThunk(
   async ({ userId, addressId, formData }) => {
     const response = await axios.put(
       `http://localhost:5000/api/shop/address/update/${userId}/${addressId}`,
-      { formData }
+      formData
     );
     return response?.data;
   }

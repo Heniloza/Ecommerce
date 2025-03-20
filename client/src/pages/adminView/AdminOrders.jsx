@@ -1,9 +1,8 @@
-import React from 'react'
+import AdminOrdersComponent from "@/components/adminView/AdminOrdersComponent";
+import React from "react";
 
 function AdminOrders() {
-  return (
-    <div>Orders</div>
-  )
+  return <AdminOrdersComponent />;
 }
 
-export default AdminOrders
+export default AdminOrders;

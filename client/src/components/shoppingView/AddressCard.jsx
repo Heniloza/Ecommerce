@@ -1,17 +1,22 @@
 import React from "react";
-import { Card, CardContent } from "../ui/card";
+import { Card, CardContent, CardFooter } from "../ui/card";
 import { Label } from "../ui/label";
+import { Button } from "../ui/button";
 
-function AddressCard({ addressInfo }) {
+function AddressCard({ addressInfo, handleDeleteAddress, handleEditAddress }) {
   return (
     <Card>
-      <CardContent className="grid gap-4">
-        <Label>{addressInfo?.address}</Label>
-        <Label>{addressInfo?.city}</Label>
-        <Label>{addressInfo?.pinCode}</Label>
-        <Label>{addressInfo?.phone}</Label>
-        <Label>{addressInfo?.notes}</Label>
+      <CardContent className="grid gap-4 pt-2">
+        <Label>Address : {addressInfo?.address}</Label>
+        <Label>City : {addressInfo?.city}</Label>
+        <Label>pinCode : {addressInfo?.pinCode}</Label>
+        <Label>Phone : {addressInfo?.phone}</Label>
+        <Label>Notes : {addressInfo?.notes}</Label>
       </CardContent>
+      <CardFooter className="flex justify-between p-3">
+        <Button onClick={() => handleEditAddress(addressInfo)}>Edit</Button>
+        <Button onClick={() => handleDeleteAddress(addressInfo)}>Delete</Button>
+      </CardFooter>
     </Card>
   );
 }

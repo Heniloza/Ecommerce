@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import {
   Table,
   TableBody,
@@ -9,16 +9,15 @@ import {
   TableRow,
 } from "../ui/table";
 import { Button } from "../ui/button";
-import { Dialog } from "@radix-ui/react-dialog";
-import ShoppingOrderDetails from "./ShoppingOrderDetails";
+import { Dialog } from "../ui/dialog";
+import OrderDetails from "./OrderDetails";
 
-function Orders() {
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-
+function AdminOrdersComponent() {
+  const [opendetailsDialog, setOpenDetailsDialog] = useState(false);
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Order History</CardTitle>
+        <CardTitle>All Order History</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
@@ -41,13 +40,13 @@ function Orders() {
               <TableCell>₹5000</TableCell>
               <TableCell>
                 <Dialog
-                  open={openDetailsDialog}
+                  open={opendetailsDialog}
                   onOpenChange={setOpenDetailsDialog}
                 >
                   <Button onClick={() => setOpenDetailsDialog(true)}>
                     View Details
                   </Button>
-                  <ShoppingOrderDetails />
+                  <OrderDetails />
                 </Dialog>
               </TableCell>
             </TableRow>
@@ -58,4 +57,4 @@ function Orders() {
   );
 }
 
-export default Orders;
+export default AdminOrdersComponent;
