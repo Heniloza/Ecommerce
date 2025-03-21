@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import img from "../../assets/account.jpg";
 import Address from "@/components/shoppingView/Address";
 import { useSelector } from "react-redux";
@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 
 function CheckOut() {
   const { cartItems } = useSelector((state) => state.shopCart);
+  const { userId } = useSelector((state) => state.auth);
+  const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
+
   const totalCartIAmount =
     cartItems && cartItems?.items?.length > 0
       ? cartItems.items.reduce(
@@ -20,6 +23,36 @@ function CheckOut() {
           0
         )
       : 0;
+
+  function handleInitiatePaypalPayment() {
+    const orderData = {
+      userId: user?.id,
+      cartItems: cartItems.items.map((item) => ({
+        productId: item?.productId,
+        title: item?.title,
+        image: item?.image,
+        price: item?.salePrice > 0 ? item?.salePrice : item?.price,
+        quantity: item?.quantity,
+      })),
+      addressInfo: {
+        addressId: String,
+        address: String,
+        city: String,
+        pinCode: String,
+        phone: String,
+        notes: String,
+      },
+      orderStatus: "pending",
+      paymentMethod: "paypal",
+      paymentStatus: "pending",
+      totalAmount: totalCartIAmount,
+      orderDate: new Date(),
+      orderUpdateDate: new Date(),
+      paymentId: "",
+      payerId: "",
+    };
+  }
+
   return (
     <div className="flex flex-col">
       <div className="relative h-[300px] w-full overflow-hidden">
@@ -30,7 +63,7 @@ function CheckOut() {
         />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5 p-5 ">
-        <Address />
+        <Address setCurrentSelectedAddress={setCurrentSelectedAddress} />
         <div className="flex flex-col gap-4">
           {cartItems && cartItems.items && cartItems.items.length > 0 ? (
             cartItems.items.map((item) => (
@@ -51,7 +84,9 @@ function CheckOut() {
             </div>
           </div>
           <div className="w-full mt-4">
-            <Button className="w-full">Checkout with paypal</Button>
+            <Button onClick={handleInitiatePaypalPayment} className="w-full">
+              Checkout with paypal
+            </Button>
           </div>
         </div>
       </div>
