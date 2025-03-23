@@ -11,11 +11,10 @@ function AddressCard({
 }) {
   return (
     <Card
-      onClick={() =>
-        setCurrentSelectedAddress
-          ? setCurrentSelectedAddress(addressInfo)
-          : null
-      }
+      onClick={() => {
+        if (!setCurrentSelectedAddress) return;
+        setCurrentSelectedAddress(addressInfo);
+      }}
     >
       <CardContent className="grid gap-4 pt-2">
         <Label>Address : {addressInfo?.address}</Label>
@@ -25,8 +24,22 @@ function AddressCard({
         <Label>Notes : {addressInfo?.notes}</Label>
       </CardContent>
       <CardFooter className="flex justify-between p-3">
-        <Button onClick={() => handleEditAddress(addressInfo)}>Edit</Button>
-        <Button onClick={() => handleDeleteAddress(addressInfo)}>Delete</Button>
+        <Button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleEditAddress(addressInfo);
+          }}
+        >
+          Edit
+        </Button>
+        <Button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDeleteAddress(addressInfo);
+          }}
+        >
+          Delete
+        </Button>
       </CardFooter>
     </Card>
   );

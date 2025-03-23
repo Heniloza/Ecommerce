@@ -18,22 +18,21 @@ import CheckAuth from "./components/common/CheckAuth";
 import UnAuth from "./pages/UnAuth";
 import { useDispatch, useSelector } from "react-redux";
 import { checkAuth } from "../store/auth-slice/index";
-import { Skeleton } from "@/components/ui/skeleton"
-
+import { Skeleton } from "@/components/ui/skeleton";
+import PaypalReturn from "./pages/shoppingView/PaypalReturn";
+import PaypalCancel from "./pages/shoppingView/PaypalCancel";
 
 function App() {
-
-  const {user,isAuthenticated,isLoading} = useSelector(state=>state.auth);
+  const { user, isAuthenticated, isLoading } = useSelector(
+    (state) => state.auth
+  );
   const dispatch = useDispatch();
 
-  useEffect(()=>{
-    dispatch(checkAuth())
-  },[dispatch])
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
 
-  if(isLoading) return <Skeleton className="w-[600px] h-[600px]" />
-
-
-
+  if (isLoading) return <Skeleton className="w-[600px] h-[600px]" />;
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
@@ -76,10 +75,11 @@ function App() {
           <Route path="account" element={<Account />} />
           <Route path="checkout" element={<CheckOut />} />
           <Route path="listing" element={<Listing />} />
+          <Route path="paypalReturn" element={<PaypalReturn />} />
+          <Route path="paypalCancel" element={<PaypalCancel />} />
         </Route>
         <Route path="*" element={<NotFound />} />
-        <Route path="unauthpage" element={<UnAuth /> }/>
-
+        <Route path="unauthpage" element={<UnAuth />} />
       </Routes>
     </div>
   );

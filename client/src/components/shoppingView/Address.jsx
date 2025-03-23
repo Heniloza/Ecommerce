@@ -20,7 +20,7 @@ const initialAddressFormData = {
   notes: "",
 };
 
-function Address(setCurrentSelectedAddress) {
+function Address({ setCurrentSelectedAddress }) {
   const [formData, setFormData] = useState(initialAddressFormData);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);

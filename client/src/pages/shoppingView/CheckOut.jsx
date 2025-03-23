@@ -1,15 +1,21 @@
 import React, { useState } from "react";
 import img from "../../assets/account.jpg";
 import Address from "@/components/shoppingView/Address";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import UserCartItemsContent from "@/components/shoppingView/UserCartItemsContent";
 import emptyCart from "../../assets/emptyCart.jpg";
 import { Button } from "@/components/ui/button";
+import { createOrder } from "../../../store/shop/orderSlice";
+import { Loader2 } from "lucide-react";
 
 function CheckOut() {
   const { cartItems } = useSelector((state) => state.shopCart);
-  const { userId } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
+  const { approvalUrl } = useSelector((state) => state.shopOrder);
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isPaymentStart, setIsPaymentStart] = useState(false);
+  const dispatch = useDispatch();
 
   const totalCartIAmount =
     cartItems && cartItems?.items?.length > 0
@@ -25,8 +31,10 @@ function CheckOut() {
       : 0;
 
   function handleInitiatePaypalPayment() {
+    setLoading(true);
     const orderData = {
       userId: user?.id,
+      cartId: cartItems?._id,
       cartItems: cartItems.items.map((item) => ({
         productId: item?.productId,
         title: item?.title,
@@ -35,12 +43,12 @@ function CheckOut() {
         quantity: item?.quantity,
       })),
       addressInfo: {
-        addressId: String,
-        address: String,
-        city: String,
-        pinCode: String,
-        phone: String,
-        notes: String,
+        addressId: currentSelectedAddress?._id,
+        address: currentSelectedAddress?.address,
+        city: currentSelectedAddress?.city,
+        pinCode: currentSelectedAddress?.pinCode,
+        phone: currentSelectedAddress?.phone,
+        notes: currentSelectedAddress?.notes,
       },
       orderStatus: "pending",
       paymentMethod: "paypal",
@@ -51,6 +59,21 @@ function CheckOut() {
       paymentId: "",
       payerId: "",
     };
+    dispatch(createOrder(orderData))
+      .then((data) => {
+        if (data?.payloady.success) {
+          setIsPaymentStart(true);
+        } else {
+          setIsPaymentStart(false);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  if (approvalUrl) {
+    window.location.href = approvalUrl;
   }
 
   return (
@@ -84,8 +107,19 @@ function CheckOut() {
             </div>
           </div>
           <div className="w-full mt-4">
-            <Button onClick={handleInitiatePaypalPayment} className="w-full">
-              Checkout with paypal
+            <Button
+              onClick={handleInitiatePaypalPayment}
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="animate-spin" size={20} />
+                  Processing...
+                </span>
+              ) : (
+                "Checkout with PayPal"
+              )}
             </Button>
           </div>
         </div>

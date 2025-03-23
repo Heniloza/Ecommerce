@@ -32,6 +32,10 @@ const shoppingOrderSlice = createSlice({
         state.isLoading = false;
         state.approvalUrl = action.payload.approvalUrl;
         state.orderId = action.payload.orderId;
+        sessionStorage.setItem(
+          "currentOrderId",
+          JSON.stringify(action.payload.orderId)
+        );
       })
       .addCase(createOrder.rejected, (state) => {
         state.isLoading = false;
