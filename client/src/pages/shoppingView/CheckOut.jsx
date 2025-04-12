@@ -7,6 +7,7 @@ import emptyCart from "../../assets/emptyCart.jpg";
 import { Button } from "@/components/ui/button";
 import { createOrder } from "../../../store/shop/orderSlice";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 function CheckOut() {
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -16,6 +17,7 @@ function CheckOut() {
   const [loading, setLoading] = useState(false);
   const [isPaymentStart, setIsPaymentStart] = useState(false);
   const dispatch = useDispatch();
+  const { toast } = useToast();
 
   const totalCartIAmount =
     cartItems && cartItems?.items?.length > 0
@@ -31,6 +33,21 @@ function CheckOut() {
       : 0;
 
   function handleInitiatePaypalPayment() {
+    if (cartItems.length === 0) {
+      toast({
+        title: "Your Cart is Empty.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (currentSelectedAddress === null) {
+      toast({
+        title: "Select one address to proceed",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     const orderData = {
       userId: user?.id,
@@ -61,7 +78,7 @@ function CheckOut() {
     };
     dispatch(createOrder(orderData))
       .then((data) => {
-        if (data?.payloady.success) {
+        if (data?.payload?.success) {
           setIsPaymentStart(true);
         } else {
           setIsPaymentStart(false);
@@ -72,9 +89,10 @@ function CheckOut() {
       });
   }
 
-  if (approvalUrl) {
+  if (approvalUrl && !isPaymentStart) {
     window.location.href = approvalUrl;
   }
+  console.log("Selected Address:", currentSelectedAddress);
 
   return (
     <div className="flex flex-col">

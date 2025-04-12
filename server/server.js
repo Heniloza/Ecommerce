@@ -9,6 +9,7 @@ const shopProductRoutes = require("./routes/shop/shopProductRoutes");
 const shopCartRoutes = require("./routes/shop/ShopCartRoutes.js");
 const addressRoutes = require("./routes/shop/addressRoutes.js");
 const orderRoutes = require("./routes/shop/orderRoutes.js");
+const adminOrderRoutes = require("./routes/admin/orderRoutes.js");
 
 const app = express();
 dotenv.config();
@@ -47,5 +48,6 @@ app.use("/api/shop/products", shopProductRoutes);
 app.use("/api/shop/cart", shopCartRoutes);
 app.use("/api/shop/address", addressRoutes);
 app.use("/api/shop/order", orderRoutes);
+app.use("/api/admin/order", adminOrderRoutes);
 
 app.listen(PORT, () => console.log(`SERVER STARTED AT ${PORT} PORT`));

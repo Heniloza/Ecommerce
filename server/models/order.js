@@ -27,8 +27,18 @@ const orderSchema = new mongoose.Schema(
     totalAmount: Number,
     orderDate: Date,
     orderUpdateDate: Date,
-    paymentId: String,
-    payerId: String,
+    paymentId: {
+      type: String,
+      required: function () {
+        return this.paymentMethod === "paypal";
+      },
+    },
+    payerId: {
+      type: String,
+      required: function () {
+        return this.paymentMethod === "paypal";
+      },
+    },
   },
   { timestamps: true }
 );

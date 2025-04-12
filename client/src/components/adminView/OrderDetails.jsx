@@ -3,65 +3,104 @@ import { Label } from "../ui/label";
 import { DialogContent } from "../ui/dialog";
 import { Separator } from "../ui/separator";
 import FormCommon from "../common/FormCommon";
+import { Badge } from "../ui/badge";
+import { useDispatch } from "react-redux";
+import {
+  getAllOrderUsers,
+  getOrderDetailsAdmin,
+  updateOrderStatus,
+} from "../../../store/admin/orderSlice";
 
 const initialState = {
   status: "",
 };
 
-function OrderDetails() {
+function OrderDetails({ orderDetails }) {
   const [formData, setFormData] = useState(initialState);
+  const dispatch = useDispatch();
 
   function handleUpdateStatus(e) {
     e.preventDefault();
+    const { status } = formData;
+    dispatch(
+      updateOrderStatus({ id: orderDetails?._id, orderStatus: status })
+    ).then((data) => {
+      // console.log(data);
+      if (data?.payload.success) {
+        dispatch(getOrderDetailsAdmin(orderDetails?._id));
+        dispatch(getAllOrderUsers());
+        setFormData(initialState);
+      }
+    });
   }
 
   return (
-    <DialogContent className="sm:max-w-[600px] ">
+    <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto ">
       <div className="grid gap-6">
         <div className="grid gap-2">
           <div className="flex items-center justify-between mt-6">
             <p className="font-medium">Order ID:</p>
-            <Label>123456</Label>
+            <Label>{orderDetails?._id}</Label>
           </div>
           <div className="flex items-center justify-between mt-2">
             <p className="font-medium">Order DATE:</p>
-            <Label>21/11/2005</Label>
+            <Label>{orderDetails?.orderDate.split("T")[0]}</Label>
           </div>
           <div className="flex items-center justify-between mt-2">
             <p className="font-medium">Order Price:</p>
-            <Label>₹5000</Label>
+            <Label>₹{orderDetails?.totalAmount}</Label>
+          </div>
+          <div className="flex items-center justify-between mt-2">
+            <p className="font-medium">Payment Mehtod:</p>
+            <Label>{orderDetails?.paymentMethod}</Label>
+          </div>
+          <div className="flex items-center justify-between mt-2">
+            <p className="font-medium">Payment Status:</p>
+            <Label>{orderDetails?.paymentStatus}</Label>
           </div>
           <div className="flex items-center justify-between mt-2">
             <p className="font-medium">Order Status:</p>
-            <Label>In Process</Label>
+            <Label>
+              <Badge
+                className={`py-1 px-3 font-bold ${
+                  orderDetails?.orderStatus === "confirmed" ||
+                  orderDetails?.orderStatus === "Delivered" ||
+                  orderDetails?.orderStatus === "inshipping" ||
+                  orderDetails?.orderStatus === "inprocess"
+                    ? "bg-green-500"
+                    : "bg-red-700"
+                }`}
+              >
+                {orderDetails?.orderStatus}
+              </Badge>
+            </Label>
           </div>
         </div>
         <Separator />
         <div className="grid gap-4">
           <div className="grid gap-2">
             <div>Order Details</div>
+
+            <div className="grid grid-cols-3 font-bold">
+              <span>Title</span>
+              <span className="text-center">Quantity</span>
+              <span className="text-right">Price</span>
+            </div>
+
             <ul className="grid gap-3">
-              <li className="flex items-center justify-between">
-                <span>Product One</span>
-                <span>Product Price 500</span>
-              </li>
+              {orderDetails?.cartItems && orderDetails?.cartItems.length > 0
+                ? orderDetails?.cartItems.map((item, index) => (
+                    <li key={index} className="grid grid-cols-3 items-center">
+                      <span>{item?.title}</span>
+                      <span className="text-center">{item?.quantity}</span>
+                      <span className="text-right">₹{item?.price}</span>
+                    </li>
+                  ))
+                : null}
             </ul>
           </div>
         </div>
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <div>Shipping Info</div>
-            <div className="grid gap-0.5 text-muted-foreground">
-              <span>John Doe</span>
-              <span>address</span>
-              <span>City</span>
-              <span>PinCode</span>
-              <span>Phone</span>
-              <span>Notes</span>
-            </div>
-          </div>
-        </div>
-        <div>
+        <div className="border">
           <FormCommon
             formControl={[
               {
