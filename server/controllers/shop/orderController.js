@@ -1,5 +1,6 @@
 const ORDER = require("../../models/order.js");
 const CART = require("../../models/cart.js");
+const PRODUCT = require("../../models/product.js");
 const paypal = require("@paypal/checkout-server-sdk");
 require("dotenv").config();
 
@@ -156,6 +157,21 @@ const capturePayment = async (req, res) => {
     order.paymentStatus = "paid";
     order.orderStatus = "confirmed";
     order.payerId = capture.result.payer.payer_id;
+
+    for (let item of order.cartItems) {
+      let product = await PRODUCT.findById(item.productId);
+
+      if (!product) {
+        return res.status(404).json({
+          success: false,
+          message: `${product.title} is not in STOCK`,
+        });
+      }
+
+      product.totalStock -= item.quantity;
+
+      await product.save();
+    }
 
     await CART.findByIdAndDelete(order.cartId);
     await order.save();

@@ -10,6 +10,7 @@ import {
   getOrderDetailsAdmin,
   updateOrderStatus,
 } from "../../../store/admin/orderSlice";
+import { useToast } from "@/hooks/use-toast";
 
 const initialState = {
   status: "",
@@ -18,6 +19,7 @@ const initialState = {
 function OrderDetails({ orderDetails }) {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
+  const { toast } = useToast();
 
   function handleUpdateStatus(e) {
     e.preventDefault();
@@ -30,6 +32,9 @@ function OrderDetails({ orderDetails }) {
         dispatch(getOrderDetailsAdmin(orderDetails?._id));
         dispatch(getAllOrderUsers());
         setFormData(initialState);
+        toast({
+          title: `${data?.payload?.message} to ${status}`,
+        });
       }
     });
   }
@@ -64,7 +69,7 @@ function OrderDetails({ orderDetails }) {
               <Badge
                 className={`py-1 px-3 font-bold ${
                   orderDetails?.orderStatus === "confirmed" ||
-                  orderDetails?.orderStatus === "Delivered" ||
+                  orderDetails?.orderStatus === "delivered" ||
                   orderDetails?.orderStatus === "inshipping" ||
                   orderDetails?.orderStatus === "inprocess"
                     ? "bg-green-500"

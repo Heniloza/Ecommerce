@@ -80,12 +80,21 @@ function ProductDetailsDialogue({ open, setOpen, productDetails }) {
             <span className="text-muted-foreground">(4.5)</span>
           </div>
           <div className="mt-12 mb-5">
-            <Button
-              onClick={() => handleAddToCart(productDetails?._id)}
-              className="w-full "
-            >
-              Add To Cart
-            </Button>
+            {productDetails?.totalStock === 0 ? (
+              <Button
+                onClick={() => handleAddToCart(productDetails?._id)}
+                className="w-full opacity-60 cursor-not-allowed"
+              >
+                Out of stock
+              </Button>
+            ) : (
+              <Button
+                onClick={() => handleAddToCart(productDetails?._id)}
+                className="w-full "
+              >
+                Add To Cart
+              </Button>
+            )}
           </div>
           <Separator />
           <div className="max-h-[300px] overflow-auto">

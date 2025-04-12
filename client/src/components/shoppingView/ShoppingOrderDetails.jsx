@@ -37,7 +37,10 @@ function ShoppingOrderDetails({ orderDetails }) {
             <Label>
               <Badge
                 className={`py-1 px-3 font-bold ${
-                  orderDetails?.orderStatus === "confirmed"
+                  orderDetails?.orderStatus === "confirmed" ||
+                  orderDetails?.orderStatus === "delivered" ||
+                  orderDetails?.orderStatus === "inprocess" ||
+                  orderDetails?.orderStatus === "inshipping"
                     ? "bg-green-500"
                     : "bg-red-700"
                 }`}

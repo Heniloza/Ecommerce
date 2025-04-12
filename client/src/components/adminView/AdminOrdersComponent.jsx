@@ -63,7 +63,7 @@ function AdminOrdersComponent() {
                       <Badge
                         className={`py-1 px-3 font-bold ${
                           item?.orderStatus === "confirmed" ||
-                          item?.orderStatus === "Delivered" ||
+                          item?.orderStatus === "delivered" ||
                           item?.orderStatus === "inshipping" ||
                           item?.orderStatus === "inprocess"
                             ? "bg-green-500"
