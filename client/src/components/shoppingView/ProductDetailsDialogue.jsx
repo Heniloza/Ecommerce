@@ -11,10 +11,30 @@ import { useToast } from "@/hooks/use-toast";
 import { setProductDetails } from "../../../store/shop/productSlice";
 
 function ProductDetailsDialogue({ open, setOpen, productDetails }) {
+  const { cartItems } = useSelector((state) => state.shopCart);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { toast } = useToast();
-  function handleAddToCart(getCurrentProductId) {
+  function handleAddToCart(getCurrentProductId, getTotalStock) {
+    let getCartItems = cartItems.items || [];
+
+    if (getCartItems.length) {
+      const indexOfCurrentItem = getCartItems.findIndex(
+        (item) => item.productId === getCurrentProductId
+      );
+
+      if (indexOfCurrentItem > -1) {
+        const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+        if (getQuantity + 1 > getTotalStock) {
+          toast({
+            title: `Only ${getQuantity} quantity can be added for this product`,
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+    }
+
     dispatch(
       addToCart({
         userId: user?.id,
@@ -82,14 +102,24 @@ function ProductDetailsDialogue({ open, setOpen, productDetails }) {
           <div className="mt-12 mb-5">
             {productDetails?.totalStock === 0 ? (
               <Button
-                onClick={() => handleAddToCart(productDetails?._id)}
+                onClick={() =>
+                  handleAddToCart(
+                    productDetails?._id,
+                    productDetails?.totalStock
+                  )
+                }
                 className="w-full opacity-60 cursor-not-allowed"
               >
                 Out of stock
               </Button>
             ) : (
               <Button
-                onClick={() => handleAddToCart(productDetails?._id)}
+                onClick={() =>
+                  handleAddToCart(
+                    productDetails?._id,
+                    productDetails?.totalStock
+                  )
+                }
                 className="w-full "
               >
                 Add To Cart
