@@ -11,6 +11,7 @@ const addressRoutes = require("./routes/shop/addressRoutes.js");
 const orderRoutes = require("./routes/shop/orderRoutes.js");
 const adminOrderRoutes = require("./routes/admin/orderRoutes.js");
 const searchRoutes = require("./routes/shop/searchRoutes.js");
+const reviewRoutes = require("./routes/shop/reviewRoutes.js");
 
 const app = express();
 dotenv.config();
@@ -51,5 +52,6 @@ app.use("/api/shop/address", addressRoutes);
 app.use("/api/shop/order", orderRoutes);
 app.use("/api/admin/order", adminOrderRoutes);
 app.use("/api/shop/search", searchRoutes);
+app.use("/api/shop/review", reviewRoutes);
 
 app.listen(PORT, () => console.log(`SERVER STARTED AT ${PORT} PORT`));

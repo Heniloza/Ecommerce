@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
@@ -9,12 +9,36 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart, fetchCartItems } from "../../../store/shop/cartSlice";
 import { useToast } from "@/hooks/use-toast";
 import { setProductDetails } from "../../../store/shop/productSlice";
+import { Label } from "../ui/label";
+import StarRating from "../common/StarRating";
+import { addProductReview } from "../../../store/shop/reviewSlice";
 
 function ProductDetailsDialogue({ open, setOpen, productDetails }) {
   const { cartItems } = useSelector((state) => state.shopCart);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { toast } = useToast();
+  const [reviewMessage, setReviewMessage] = useState("");
+  const [rating, setRating] = useState(0);
+
+  function handleRatingChange(getRating) {
+    setRating(getRating);
+  }
+
+  function handleAddReview() {
+    dispatch(
+      addProductReview({
+        productId: productDetails?._id,
+        userId: user?.id,
+        username: user?.username,
+        reviewMessage,
+        reviewValue: rating,
+      })
+    ).then((data) => {
+      console.log(data);
+    });
+  }
+
   function handleAddToCart(getCurrentProductId, getTotalStock) {
     let getCartItems = cartItems.items || [];
 
@@ -54,6 +78,8 @@ function ProductDetailsDialogue({ open, setOpen, productDetails }) {
   function handleDialogueClose() {
     setOpen(false);
     dispatch(setProductDetails());
+    setRating(0);
+    setReviewMessage("");
   }
 
   return (
@@ -191,9 +217,26 @@ function ProductDetailsDialogue({ open, setOpen, productDetails }) {
                 </div>
               </div>
             </div>
-            <div className="mt-6 flex gap-2 ">
-              <Input placeholder="write yout review.." />
-              <Button>Submit</Button>
+            <div className="mt-10 flex flex-col gap-2 ">
+              <Label>Write a review</Label>
+              <div className="flex gap-2">
+                <StarRating
+                  rating={rating}
+                  handleRatingChange={handleRatingChange}
+                />
+              </div>
+              <Input
+                name="reviewMessage"
+                value={reviewMessage}
+                onChange={(e) => setReviewMessage(e.target.value)}
+                placeholder="write yout review.."
+              />
+              <Button
+                disabled={reviewMessage.trim() === ""}
+                onClick={handleAddReview}
+              >
+                Submit
+              </Button>
             </div>
           </div>
         </div>
