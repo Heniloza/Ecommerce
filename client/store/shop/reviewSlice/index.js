@@ -21,7 +21,7 @@ export const getProductReview = createAsyncThunk(
   "/review/getProductReview",
   async (productId) => {
     const result = await axios.get(
-      `http://localhost:5000/api/shop/review/${productId}`
+      `http://localhost:5000/api/shop/review/get/${productId}`
     );
     return result?.data;
   }
@@ -43,6 +43,9 @@ const reviewSlice = createSlice({
       .addCase(addProductReview.rejected, (state) => {
         state.isLoading = true;
         state.reviews = [];
+      })
+      .addCase(getProductReview.fulfilled, (state, action) => {
+        state.reviews = action.payload.data;
       });
   },
 });

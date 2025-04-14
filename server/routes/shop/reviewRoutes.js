@@ -6,6 +6,6 @@ const {
 const router = express.Router();
 
 router.post("/add", addProductReview);
-router.get("/:productId", getProductReviews);
+router.get("/get/:productId", getProductReviews);
 
 module.exports = router;

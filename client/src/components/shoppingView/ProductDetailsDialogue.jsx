@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
@@ -11,10 +11,14 @@ import { useToast } from "@/hooks/use-toast";
 import { setProductDetails } from "../../../store/shop/productSlice";
 import { Label } from "../ui/label";
 import StarRating from "../common/StarRating";
-import { addProductReview } from "../../../store/shop/reviewSlice";
+import {
+  addProductReview,
+  getProductReview,
+} from "../../../store/shop/reviewSlice";
 
 function ProductDetailsDialogue({ open, setOpen, productDetails }) {
   const { cartItems } = useSelector((state) => state.shopCart);
+  const { reviews } = useSelector((state) => state.shopReview);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { toast } = useToast();
@@ -35,7 +39,13 @@ function ProductDetailsDialogue({ open, setOpen, productDetails }) {
         reviewValue: rating,
       })
     ).then((data) => {
-      console.log(data);
+      // console.log(data);
+      if (data?.payload?.success) {
+        dispatch(getProductReview(productDetails?._id));
+        toast({
+          title: "Review added successfully.",
+        });
+      }
     });
   }
 
@@ -81,6 +91,12 @@ function ProductDetailsDialogue({ open, setOpen, productDetails }) {
     setRating(0);
     setReviewMessage("");
   }
+
+  useEffect(() => {
+    if (productDetails !== null)
+      dispatch(getProductReview(productDetails?._id));
+  }, [productDetails]);
+  console.log(reviews, "Got reviews");
 
   return (
     <Dialog open={open} onOpenChange={handleDialogueClose}>
@@ -156,66 +172,30 @@ function ProductDetailsDialogue({ open, setOpen, productDetails }) {
           <div className="max-h-[300px] overflow-auto">
             <h2 className="text-xl font-bold mb-4">Reviews</h2>
             <div className="grid gap-6">
-              <div className="flex gap-4 ">
-                <Avatar className="w-10 h-10 border">
-                  <AvatarFallback>SM</AvatarFallback>
-                </Avatar>
-                <div className="grid gap-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold">Henil Shrimali</h3>
+              {reviews && reviews.length > 0 ? (
+                reviews.map((item) => (
+                  <div className="flex gap-4 ">
+                    <Avatar className="w-10 h-10 border">
+                      <AvatarFallback>
+                        {item?.username[0].toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="grid gap-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold">{item?.username}</h3>
+                      </div>
+                      <div className="flex items-center gap-0.5">
+                        <StarRating rating={item?.reviewValue} />
+                      </div>
+                      <p className="text-muted-foreground">
+                        {item?.reviewMessage}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-0.5">
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                  </div>
-                  <p className="text-muted-foreground">
-                    This is an awesome product
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4 ">
-                <Avatar className="w-10 h-10 border">
-                  <AvatarFallback>SM</AvatarFallback>
-                </Avatar>
-                <div className="grid gap-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold">Henil Shrimali</h3>
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                  </div>
-                  <p className="text-muted-foreground">
-                    This is an awesome product
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4 ">
-                <Avatar className="w-10 h-10 border">
-                  <AvatarFallback>SM</AvatarFallback>
-                </Avatar>
-                <div className="grid gap-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold">Henil Shrimali</h3>
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                  </div>
-                  <p className="text-muted-foreground">
-                    This is an awesome product
-                  </p>
-                </div>
-              </div>
+                ))
+              ) : (
+                <h3>No reviews available</h3>
+              )}
             </div>
             <div className="mt-10 flex flex-col gap-2 ">
               <Label>Write a review</Label>
