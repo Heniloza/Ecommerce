@@ -8,7 +8,9 @@ function PaymentSuccess() {
   return (
     <Card className="p-8">
       <CardHeader className="p-0">
-        <CardTitle className="text-4xl ">Processing successfull</CardTitle>
+        <CardTitle className="text-4xl ">
+          Processing successfull completed
+        </CardTitle>
       </CardHeader>
       <Button className="mt-5" onCLick={() => navigate("/shop/account")}>
         View Orders
