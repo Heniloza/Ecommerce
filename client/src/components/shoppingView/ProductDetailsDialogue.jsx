@@ -76,6 +76,8 @@ function ProductDetailsDialogue({ open, setOpen, productDetails }) {
         quantity: 1,
       })
     ).then((data) => {
+      setRating(0);
+      setReviewMessage("");
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
         toast({
@@ -97,6 +99,12 @@ function ProductDetailsDialogue({ open, setOpen, productDetails }) {
       dispatch(getProductReview(productDetails?._id));
   }, [productDetails]);
   console.log(reviews, "Got reviews");
+
+  const averageReview =
+    reviews.length && reviews.length > 0
+      ? reviews.reduce((sum, reviewItem) => sum + reviewItem.reviewValue, 0) /
+        reviews.length
+      : 0;
 
   return (
     <Dialog open={open} onOpenChange={handleDialogueClose}>
@@ -133,13 +141,9 @@ function ProductDetailsDialogue({ open, setOpen, productDetails }) {
           </div>
           <div className="flex items-center gap-2 mt-2">
             <div className="flex items-center gap-0.5">
-              <StarIcon className="w-5 h-5 fill-primary" />
-              <StarIcon className="w-5 h-5 fill-primary" />
-              <StarIcon className="w-5 h-5 fill-primary" />
-              <StarIcon className="w-5 h-5 fill-primary" />
-              <StarIcon className="w-5 h-5 fill-primary" />
+              <StarRating rating={averageReview} />
             </div>
-            <span className="text-muted-foreground">(4.5)</span>
+            <span className="text-muted-foreground">{`(${averageReview})`}</span>
           </div>
           <div className="mt-12 mb-5">
             {productDetails?.totalStock === 0 ? (

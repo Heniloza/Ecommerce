@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { createOrder } from "../../../store/shop/orderSlice";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Label } from "@radix-ui/react-label";
 
 function CheckOut() {
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -103,8 +104,19 @@ function CheckOut() {
           className="h-full w-full object-cover object-center"
         />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5 p-5 ">
-        <Address setCurrentSelectedAddress={setCurrentSelectedAddress} />
+      <div className="flex justify-center items-center mt-2 w-[800px]">
+        <Label>
+          {currentSelectedAddress
+            ? "Address is selected"
+            : "Select Address first to buy item"}
+        </Label>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3  p-5 ">
+        <Address
+          selectedId={currentSelectedAddress}
+          setCurrentSelectedAddress={setCurrentSelectedAddress}
+        />
         <div className="flex flex-col gap-4">
           {cartItems && cartItems.items && cartItems.items.length > 0 ? (
             cartItems.items.map((item) => (
@@ -128,7 +140,7 @@ function CheckOut() {
             <Button
               onClick={handleInitiatePaypalPayment}
               className="w-full"
-              disabled={loading}
+              disabled={loading || cartItems?.items?.length <= 0}
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">

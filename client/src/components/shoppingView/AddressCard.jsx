@@ -8,6 +8,7 @@ function AddressCard({
   handleDeleteAddress,
   handleEditAddress,
   setCurrentSelectedAddress,
+  selectedId,
 }) {
   return (
     <Card
@@ -15,8 +16,13 @@ function AddressCard({
         if (!setCurrentSelectedAddress) return;
         setCurrentSelectedAddress(addressInfo);
       }}
+      className={`cursor-pointer ${
+        selectedId?._id === addressInfo?._id
+          ? "border-red-600 border-[4px]"
+          : "border-black"
+      }`}
     >
-      <CardContent className="grid gap-4 pt-2">
+      <CardContent className={`grid gap-4 pt-2`}>
         <Label>Address : {addressInfo?.address}</Label>
         <Label>City : {addressInfo?.city}</Label>
         <Label>pinCode : {addressInfo?.pinCode}</Label>

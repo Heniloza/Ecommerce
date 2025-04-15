@@ -4,6 +4,18 @@ import { Navigate, useLocation } from "react-router-dom";
 function CheckAuth({ isAuthenticated, user, children }) {
   const location = useLocation();
 
+  if (location.pathname === "/") {
+    if (!isAuthenticated) {
+      return <Navigate to="/auth/login" />;
+    } else {
+      if (user?.role === "admin") {
+        return <Navigate to="/admin/dashboard" />;
+      } else {
+        return <Navigate to="/shop/home" />;
+      }
+    }
+  }
+
   if (
     !isAuthenticated &&
     !(
@@ -28,7 +40,11 @@ function CheckAuth({ isAuthenticated, user, children }) {
   }
 
   // Prevent admin from accessing shop routes
-  if (isAuthenticated && user?.role === "admin" && location.pathname.includes("/shop")) {
+  if (
+    isAuthenticated &&
+    user?.role === "admin" &&
+    location.pathname.includes("/shop")
+  ) {
     console.log("Admin cannot access shop routes.");
     return <Navigate to="/admin/dashboard" />;
   }
