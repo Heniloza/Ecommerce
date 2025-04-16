@@ -14,6 +14,7 @@ const ImageUpload = ({
   setImageLoadingState,
   imageLoadingState,
   isEditable,
+  isCustomStyling = false,
 }) => {
   const inputRef = useRef(null);
 
@@ -60,12 +61,14 @@ const ImageUpload = ({
   }, [imageFile]);
 
   return (
-    <div className="w-full mad-w-md mx-auto mt-4 ">
+    <div className={`w-full ${isCustomStyling ? "" : "max-w-md mx-auto"} mt-4`}>
       <Label className="text-lg font-semibold mb-2 block">Upload Image</Label>
       <div
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        className={`border-2 border-dashed rounded-lg p-4 ${isEditable ? "opacity-60": ""}`}
+        className={`border-2 border-dashed rounded-lg p-4 ${
+          isEditable ? "opacity-60" : ""
+        }`}
       >
         <Input
           id="image-upload"
@@ -78,14 +81,16 @@ const ImageUpload = ({
         {!imageFile ? (
           <Label
             htmlFor="image-upload"
-          className={`${isEditable? 'cursor-not-allowed':""}flex flex-col items-center justify-center h-32 cursor-pointer`}
+            className={`${
+              isEditable ? "cursor-not-allowed" : ""
+            }flex flex-col items-center justify-center h-32 cursor-pointer`}
           >
             <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
             <span>Drag & drop OR click to upload image</span>
           </Label>
+        ) : imageLoadingState ? (
+          <Skeleton className="h-16 w-full rounded-lg bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse" />
         ) : (
-          imageLoadingState ?
-          <Skeleton  className="h-16 w-full rounded-lg bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse"/>:
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <FilesIcon className="w-8 h-8 text-primary mr-2" />
